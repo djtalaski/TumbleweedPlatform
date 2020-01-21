@@ -1,0 +1,3 @@
+Updated function 'continuous_setpoint_from_angle' for Kinematic mass motion. 
+Added raw value for angular velocity from Gyro. 
+Toggle between filtered value (1) and raw value(2) using variable 'velocity_source'

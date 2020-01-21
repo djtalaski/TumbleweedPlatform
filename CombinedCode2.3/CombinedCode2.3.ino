@@ -4,7 +4,7 @@
  */
 
  // Set Up Timer ///////////////////////
-   //unsigned long time
+ // unsigned long time
 
 // Header for Distance sensor /////////////////////////////////////////////////////////////////////////
 #include "Adafruit_VL53L0X.h"
@@ -166,7 +166,7 @@ void setup() {
 void loop() {
 
   // Time //
-//  time=millis()
+ // time=millis()
 
 // Distnace Sensor //
  VL53L0X_RangingMeasurementData_t measure;
