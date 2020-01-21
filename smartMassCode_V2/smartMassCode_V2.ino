@@ -10,7 +10,7 @@
 // unsigned long time
 
 // Header for Distance sensor /////////////////////////////////////////////////////////////////////////
-#include "Adafruit_VL53L0X.h"
+#include "Adafruit_VL53L0X.h"+
 
 Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 
@@ -34,12 +34,12 @@ void displaySensorDetails(void) //details about the gyo sensor
   sensor_t sensor;
   bno.getSensor(&sensor);
   Serial.println(F("------------------------------------"));
-  Serial.print  (F("Sensor:       ")); Serial.println(F(sensor.name));
-  Serial.print  (F("Driver Ver:   ")); Serial.println(F(sensor.version));
-  Serial.print  (F("Unique ID:    ")); Serial.println(F(sensor.sensor_id));
-  Serial.print  (F("Max Value:    ")); Serial.print(sensor.max_value); Serial.println(F(" xxx"));
-  Serial.print  (F("Min Value:    ")); Serial.print(sensor.min_value); Serial.println(F(" xxx"));
-  Serial.print  (F("Resolution:   ")); Serial.print(sensor.resolution); Serial.println(F(" xxx"));
+  Serial.print(F("Sensor:       ")); Serial.println(sensor.name);
+  Serial.print(F("Driver Ver:   ")); Serial.println(sensor.version);
+  Serial.print(F("Unique ID:    ")); Serial.println(sensor.sensor_id);
+  Serial.print(F("Max Value:    ")); Serial.print(sensor.max_value); Serial.println(F(" xxx"));
+  Serial.print(F("Min Value:    ")); Serial.print(sensor.min_value); Serial.println(F(" xxx"));
+  Serial.print(F("Resolution:   ")); Serial.print(sensor.resolution); Serial.println(F(" xxx"));
   Serial.println(F("------------------------------------"));
   Serial.println(F(""));
   delay(500);
@@ -431,7 +431,3 @@ void loop() {
   stoprunprotothread(&stoprunPT);
 
  }
-
-
-
-

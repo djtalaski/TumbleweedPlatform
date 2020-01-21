@@ -1,0 +1,4 @@
+Four Mass with 9dof OLD Adafruit IMU
+IMU : 
+LSM303DLHC Acc/mag
+L3GD20H Gyro
