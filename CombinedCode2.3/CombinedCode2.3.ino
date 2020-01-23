@@ -17,12 +17,12 @@ Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
 
-/* Set the delay between fresh samples */
+// Set the delay between fresh samples
 #define BNO055_SAMPLERATE_DELAY_MS (100)
 
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
 
-void displaySensorDetails(void)
+void displaySensorDetails()
 {
   sensor_t sensor;
   bno.getSensor(&sensor);
@@ -38,14 +38,14 @@ void displaySensorDetails(void)
   delay(500);
 }
 
-void displaySensorStatus(void)
+void displaySensorStatus()
 {
-  /* Get the system status values (mostly for debugging purposes) */
+  // Get the system status values (mostly for debugging purposes)
   uint8_t system_status, self_test_results, system_error;
   system_status = self_test_results = system_error = 0;
   bno.getSystemStatus(&system_status, &self_test_results, &system_error);
 
-  /* Display the results in the Serial Monitor */
+  // Display the results in the Serial Monitor
   Serial.println("");
   Serial.print("System Status: 0x");
   Serial.println(system_status, HEX);
@@ -57,23 +57,21 @@ void displaySensorStatus(void)
   delay(500);
 }
 
-void displayCalStatus(void)
+void displayCalStatus()
 {
-  /* Get the four calibration values (0..3) */
-  /* Any sensor data reporting 0 should be ignored, */
-  /* 3 means 'fully calibrated" */
+  /* Get the four calibration values (0..3)
+   * Any sensor data reporting 0 should be ignored,
+   * 3 means 'fully calibrated"
+   */
   uint8_t system, gyro, accel, mag;
   system = gyro = accel = mag = 0;
   bno.getCalibration(&system, &gyro, &accel, &mag);
 
-  /* The data should be ignored until the system calibration is > 0 */
+  // The data should be ignored until the system calibration is > 0
   Serial.print("\t");
-  if (!system)
-  {
-    Serial.print("! ");
-  }
+  if (!system) Serial.print("! ");
 
-  /* Display the individual values */
+  // Display the individual values
   Serial.print("Sys:");
   Serial.print(system, DEC);
   Serial.print(" G:");
@@ -85,7 +83,7 @@ void displayCalStatus(void)
 }
 
 // Header for Motor Driver //////////////////////////////////////////////////////////////////////////////
-//Declare pin functions on Arduino
+// Declare pin functions on Arduino
 #define stp 2
 #define dir 3
 #define MS1 4
@@ -93,23 +91,21 @@ void displayCalStatus(void)
 #define MS3 6
 #define EN  7
 
-//Declare variables for functions
+// Declare variables for functions
 char user_input;
-int x;
-int y;
 int state;
 
-void setup() {
+void setup()
+{
    Serial.begin(9600);
 
-   // Distance Sensor Checks//////////////////////////////////////////////////
-     // wait until serial port opens for native USB devices
-  while (! Serial) {
-    delay(1);
-  }
+  // Distance Sensor Checks//////////////////////////////////////////////////
+  // wait until serial port opens for native USB devices
+  while (!Serial) delay(1);
   
   Serial.println("Adafruit VL53L0X test");
-  if (!lox.begin()) {
+  if (!lox.begin())
+  {
     Serial.println(F("Failed to boot VL53L0X"));
     while(1);
   }
@@ -117,22 +113,22 @@ void setup() {
   Serial.println(F("VL53L0X API Simple Ranging example\n\n")); 
 
   // Gyroscope Sensor Checks/////////////////////////////////////////////////
-    Serial.println("Orientation Sensor Test"); Serial.println("");
+  Serial.println("Orientation Sensor Test\n");
 
-  /* Initialise the sensor */
-  if(!bno.begin())
+  // Initialise the sensor
+  if (!bno.begin())
   {
-    /* There was a problem detecting the BNO055 ... check your connections */
-    Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
+    // There was a problem detecting the BNO055 ... check your connections
+    Serial.print("Oops, no BNO055 detected ... Check your wiring or I2C ADDR!");
     while(1);
   }
 
   delay(1000);
 
-  /* Display some basic information on this sensor */
+  // Display some basic information on this sensor
   displaySensorDetails();
 
-  /* Optional: Display current status */
+  // Optional: Display current status
   displaySensorStatus();
 
   bno.setExtCrystalUse(true);
@@ -144,115 +140,98 @@ void setup() {
   pinMode(MS2, OUTPUT);
   pinMode(MS3, OUTPUT);
   pinMode(EN, OUTPUT);
-  resetBEDPins(); //Set step, direction, microstep and enable pins to default states
-  Serial.begin(9600); //Open Serial connection for debugging
-  Serial.println("Begin motor control");
-  Serial.println();
-  //Print function list for user selection
+  resetBEDPins(); // Set step, direction, microstep and enable pins to default states
+  Serial.begin(9600); // Open Serial connection for debugging
+  Serial.println("Begin motor control\n");
+
+  // Print function list for user selection
   Serial.println("Enter number for control option:");
   Serial.println("1. Turn at default microstep mode.");
   Serial.println("2. Reverse direction at default microstep mode.");
   Serial.println("3. Turn at 1/16th microstep mode.");
   Serial.println("4. Step forward and reverse directions.");
 
-// Table Headers
-    Serial.print("Distance"); Serial.print("\t");
-    Serial.print("X"); Serial.print("\t");
-    Serial.print("Y"); Serial.print("\t");
-    Serial.print("Z"); Serial.print("\t");
-    Serial.println("");
-  }
+  // Table Headers
+  Serial.print("Distance\t");
+  Serial.print("X\t");
+  Serial.print("Y\t");
+  Serial.print("Z\t\n");
+}
 
-void loop() {
+void loop()
+{
+  // Time
+  //time=millis();
 
-  // Time //
- // time=millis()
-
-// Distnace Sensor //
- VL53L0X_RangingMeasurementData_t measure;
+  // Distance Sensor
+  VL53L0X_RangingMeasurementData_t measure;
 
   lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
 
-  if (measure.RangeStatus != 4) {  // phase failures have incorrect data
-
-    /* Get a new sensor event */
-  sensors_event_t event;
-  bno.getEvent(&event);
+  if (measure.RangeStatus != 4) // phase failures have incorrect data
+  {
+    // Get a new sensor event
+    sensors_event_t event;
+    bno.getEvent(&event);
        
-    //Table Values
-   // Serial.print(time); Serial.print("\t"); 
+    // Table Values
+    //Serial.print(time);                   Serial.print("\t"); 
     Serial.print(measure.RangeMilliMeter); Serial.print("\t"); 
+    Serial.print(event.orientation.x, 4);  Serial.print("\t"); 
+    Serial.print(event.orientation.y, 4);  Serial.print("\t"); 
+    Serial.print(event.orientation.z, 4);  Serial.print("\t");
+
+    // Optional: Display calibration status
+    displayCalStatus();
+
+    // Optional: Display sensor status (debug only)
+    //displaySensorStatus();
+
+    Serial.println(""); // New line for the next sample
+
+    delay(BNO055_SAMPLERATE_DELAY_MS); // Wait the specified delay before requesting next data
+  }
+  else
+  {
+    // Get a new sensor event
+    sensors_event_t event;
+    bno.getEvent(&event);
+  
+    // Table Values
+    Serial.print(" out of range \t");
     Serial.print(event.orientation.x, 4); Serial.print("\t"); 
     Serial.print(event.orientation.y, 4); Serial.print("\t"); 
     Serial.print(event.orientation.z, 4); Serial.print("\t");
 
-  /* Optional: Display calibration status */
-  displayCalStatus();
+    // Optional: Display calibration status
+    displayCalStatus();
 
-  /* Optional: Display sensor status (debug only) */
-  //displaySensorStatus();
+    // Optional: Display sensor status (debug only)
+    //displaySensorStatus();
 
-  /* New line for the next sample */
-  Serial.println("");
-
-  /* Wait the specified delay before requesting nex data */
+    Serial.println(""); // New line for the next sample
   
-  delay(BNO055_SAMPLERATE_DELAY_MS);
-  
-  } else {
-    /* Get a new sensor event */
-  sensors_event_t event;
-  bno.getEvent(&event);
-  
-    //Table Values
-    Serial.print(" out of range ");Serial.print("\t"); 
-    Serial.print(event.orientation.x, 4); Serial.print("\t"); 
-    Serial.print(event.orientation.y, 4); Serial.print("\t"); 
-    Serial.print(event.orientation.z, 4); Serial.print("\t");
-
-  /* Optional: Display calibration status */
-  displayCalStatus();
-
-  /* Optional: Display sensor status (debug only) */
-  //displaySensorStatus();
-
-  /* New line for the next sample */
-  Serial.println("");
-
-  /* Wait the specified delay before requesting nex data */
-  delay(BNO055_SAMPLERATE_DELAY_MS);
-  
+    delay(BNO055_SAMPLERATE_DELAY_MS); // Wait the specified delay before requesting next data
   } 
 
   // Motor Code //////////////////////////////////////////////////////////////
-while(Serial.available()){
-      user_input = Serial.read(); //Read user input and trigger appropriate function
-      digitalWrite(EN, LOW); //Pull enable pin low to set FETs active and allow motor control
-      if (user_input =='1')
-      {
-         StepForwardDefault();
-      }
-      else if(user_input =='2')
-      {
-        ReverseStepDefault();
-      }
-      else if(user_input =='3')
-      {
-        SmallStepMode();
-      }
-      else if(user_input =='4')
-      {
-        ForwardBackwardStep();
-      }
-      else
-      {
-        Serial.println("Invalid option entered.");
-      }
-      resetBEDPins();
+  while(Serial.available())
+  {
+    user_input = Serial.read(); // Read user input and trigger appropriate function
+    digitalWrite(EN, LOW); // Pull enable pin low to activate FETs and allow motor control
+    switch(user_input)
+    {
+      case '1': StepForwardDefault();   break;
+      case '2': ReverseStepDefault();   break;
+      case '3': SmallStepMode();        break;
+      case '4': ForwardBackwardStep();  break;
+      default: Serial.println("Invalid option entered.");
+    }
+    resetBEDPins();
   }
 }
 
-//Reset Big Easy Driver pins to default states
+// Reset Big Easy Driver pins to default states
 void resetBEDPins()
 {
   digitalWrite(stp, LOW);
@@ -263,36 +242,34 @@ void resetBEDPins()
   digitalWrite(EN, HIGH);
 }
 
-//Default microstep mode function
+// Default microstep mode function
 void StepForwardDefault()
 {
   Serial.println("Moving forward at default step mode.");
-  digitalWrite(dir, LOW); //Pull direction pin low to move "forward"
-  for(x= 1; x<1000; x++)  //Loop the forward stepping enough times for motion to be visible
+  digitalWrite(dir, LOW); // Pull direction pin low to move "forward"
+  for (int x = 0; x < 1000; x++) // Loop the forward stepping enough times for motion to be visible
   {
-    digitalWrite(stp,HIGH); //Trigger one step forward
+    digitalWrite(stp, HIGH); // Trigger one step forward
     delay(1);
-    digitalWrite(stp,LOW); //Pull step pin low so it can be triggered again
+    digitalWrite(stp, LOW); // Pull step pin low so it can be triggered again
     delay(1);
   }
-  Serial.println("Enter new option");
-  Serial.println();
+  Serial.println("Enter new option\n");
 }
 
-//Reverse default microstep mode function
+// Reverse default microstep mode function
 void ReverseStepDefault()
 {
   Serial.println("Moving in reverse at default step mode.");
-  digitalWrite(dir, HIGH); //Pull direction pin high to move in "reverse"
-  for(x= 1; x<1000; x++)  //Loop the stepping enough times for motion to be visible
+  digitalWrite(dir, HIGH); // Pull direction pin high to move in "reverse"
+  for (int x = 0; x < 1000; x++) // Loop the stepping enough times for motion to be visible
   {
-    digitalWrite(stp,HIGH); //Trigger one step
+    digitalWrite(stp, HIGH); // Trigger one step
     delay(1);
-    digitalWrite(stp,LOW); //Pull step pin low so it can be triggered again
+    digitalWrite(stp, LOW); // Pull step pin low so it can be triggered again
     delay(1);
   }
-  Serial.println("Enter new option");
-  Serial.println();
+  Serial.println("Enter new option\n");
 }
 
 // 1/16th microstep foward mode function
@@ -303,42 +280,34 @@ void SmallStepMode()
   digitalWrite(MS1, HIGH); //Pull MS1,MS2, and MS3 high to set logic to 1/16th microstep resolution
   digitalWrite(MS2, HIGH);
   digitalWrite(MS3, HIGH);
-  for(x= 1; x<1000; x++)  //Loop the forward stepping enough times for motion to be visible
+  for (int x = 0; x < 1000; x++)  // Loop the forward stepping enough times for motion to be visible
   {
-    digitalWrite(stp,HIGH); //Trigger one step forward
+    digitalWrite(stp, HIGH); // Trigger one step forward
     delay(1);
-    digitalWrite(stp,LOW); //Pull step pin low so it can be triggered again
+    digitalWrite(stp, LOW); // Pull step pin low so it can be triggered again
     delay(1);
   }
-  Serial.println("Enter new option");
-  Serial.println();
+  Serial.println("Enter new option\n");
 }
 
-//Forward/reverse stepping function
+// Forward/reverse stepping function
 void ForwardBackwardStep()
 {
   Serial.println("Alternate between stepping forward and reverse.");
-  for(x= 1; x<5; x++)  //Loop the forward stepping enough times for motion to be visible
+  for (int x = 0; x < 5; x++) // Loop the forward stepping enough times for motion to be visible
   {
-    //Read direction pin state and change it
-    state=digitalRead(dir);
-    if(state == HIGH)
-    {
-      digitalWrite(dir, LOW);
-    }
-    else if(state ==LOW)
-    {
-      digitalWrite(dir,HIGH);
-    }
+    // Read direction pin state and change it
+    state = digitalRead(dir);
+    if (state == HIGH) digitalWrite(dir, LOW);
+    else if (state == LOW) digitalWrite(dir, HIGH);
     
-    for(y=1; y<1000; y++)
+    for (int y = 0; y < 1000; y++)
     {
-      digitalWrite(stp,HIGH); //Trigger one step
+      digitalWrite(stp, HIGH); // Trigger one step
       delay(1);
-      digitalWrite(stp,LOW); //Pull step pin low so it can be triggered again
+      digitalWrite(stp, LOW); // Pull step pin low so it can be triggered again
       delay(1);
     }
   }
-  Serial.println("Enter new option");
-  Serial.println();
+  Serial.println("Enter new option\n");
 }
