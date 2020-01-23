@@ -1,9 +1,9 @@
 # TumbleweedPlatform
 
-# Planar Model Code:
-# Four_Mass_Setup_7
-# Tumbleweed-Four-Mass-master
-# XBee
+Planar Model Code:
+Four_Mass_Setup_7
+Tumbleweed-Four-Mass-master
+XBee
 
 # Mass Actuation Code:
 # data_collection_motor_code
