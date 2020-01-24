@@ -55,7 +55,7 @@ Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
 
-void displaySensorDetails(){ //details about the gyo sensor
+void displaySensorDetails(){ //details about the gyro sensor
   sensor_t sensor;
   bno.getSensor(&sensor);
   Serial.println("------------------------------------");
@@ -121,7 +121,7 @@ void displayCalStatus(){
 
 // Declare variables for functions
 String user_input;
-int user_inputnum, distance, x, y, state;
+int user_inputnum, distance;
 //bool prompt = false;
 
 bool front = false, middle = false, back = false, notanumber = false;
@@ -138,8 +138,8 @@ Adafruit_INA219 ina219; //calling current sensor
 float shuntvoltage = 0, busvoltage = 0, current_mA = 0, loadvoltage = 0, power_mW = 0;
 
 // Low battery message variables
-float battery=0;
-float low_battery = false;
+float battery = 0;
+bool low_battery = false;
 
 #define timethresh 100 //declaring time (milliseconds) for sensor protothreads
 
@@ -158,7 +158,7 @@ static int gyroprotothread(struct pt *pt){ //setting up protothread for BNO gyro
 static int setpointprotothread(struct pt *pt){ //setting up protothread for BNO gyro sensor
   static unsigned long runtime = 0;
   PT_BEGIN(pt);
-    PT_WAIT_UNTIL(pt,millis()-runtime> timethresh);
+    PT_WAIT_UNTIL(pt,millis() - runtime > timethresh);
     getsetpoint();
     runtime = millis();
   PT_END(pt);
