@@ -215,7 +215,7 @@ void loop()
   } 
 
   // Motor Code //////////////////////////////////////////////////////////////
-  while(Serial.available())
+  while (Serial.available())
   {
     user_input = Serial.read(); // Read user input and trigger appropriate function
     digitalWrite(EN, LOW); // Pull enable pin low to activate FETs and allow motor control
