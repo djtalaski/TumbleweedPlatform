@@ -133,7 +133,7 @@ volatile byte allowReverse = true; //boolean for reverse limit
 
 Adafruit_INA219 ina219; //calling current sensor 
 
-// Current sensor variables (getCurrentPT)
+// Current sensor variables (getCurrent)
 float shuntVoltage = 0, busVoltage = 0, current_mA = 0, loadVoltage = 0, power_mW = 0;
 
 // Low battery message variables
@@ -143,7 +143,7 @@ bool lowBattery = false;
 #define timeThresh 100 //declaring time (milliseconds) for sensor protothreads
 
 
-static struct pt getGyroPT, getDistancePT, getCurrentPTPT, getNewInputPT, forwardRunPT, backwardRunPT, stopRunPT, goFrontPT, goMiddlePT, goBackPT, getSetPointPT; //lowBattPT, getPromptPT; //declaring protothreads
+static struct pt getGyroPT, getDistancePT, getCurrentPT, getNewInputPT, forwardRunPT, backwardRunPT, stopRunPT, goFrontPT, goMiddlePT, goBackPT, getSetPointPT; //lowBattPT, getPromptPT; //declaring protothreads
 
 static int gyroProtothread(struct pt *pt){ //setting up protothread for BNO gyro sensor
   static unsigned long runtime = 0; //tracks amount of time since last trigger
@@ -176,7 +176,7 @@ static int currentProtothread(struct pt *pt){
   static unsigned long runtime = 0;
   PT_BEGIN(pt);
     PT_WAIT_UNTIL(pt, millis() - runtime > timeThresh);
-    getCurrentPT();
+    getCurrent();
     runtime = millis();
   PT_END(pt);
 }
@@ -280,7 +280,7 @@ void getGyro(){ //function to grab and display BNO gyro sensor data
   Serial.print(event.orientation.z, 4); Serial.print("\t\t\t");
 }
 
-void getCurrentPT(){ //function to grab and display current sensor data
+void getCurrent(){ //function to grab and display current sensor data
   // Current sensor loop code  //this code was moved up
   //float shuntVoltage = 0;
   //float busVoltage = 0;
@@ -291,7 +291,7 @@ void getCurrentPT(){ //function to grab and display current sensor data
   // Grabbing data for current sensor 
   shuntVoltage = ina219.getShuntVoltage_mV(); 
   busVoltage = ina219.getBusVoltage_V();
-  current_mA = ina219.getCurrentPT_mA();
+  current_mA = ina219.getCurrent_mA();
   power_mW = ina219.getPower_mW();
   loadVoltage = busVoltage + shuntVoltage / 1000; //calculation for load voltage
 
@@ -450,8 +450,8 @@ void getSetPoint(){
 //setup-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void setup(){
-  Serial.begin(500000);
-
+  Serial.begin(9600);//500000
+  Serial.print("hello");
   // Distance Sensor Checks//////////////////////////////////////////////////
   while (!Serial) delay(1); //wait until serial port opens for native USB devices
   
@@ -535,7 +535,7 @@ void setup(){
   // Initialize protothreads
   //PT_INIT(&getGyroPT);
   //PT_INIT(&getDistancePT);
-  //PT_INIT(&getCurrentPTPT);
+  //PT_INIT(&getCurrentPT);
   //PT_INIT(&getInputPT);
   //PT_INIT(&getfsPT);
   //PT_INIT(&getrsPT);
@@ -552,7 +552,7 @@ void loop(){
   setPointProtothread(&getSetPointPT);
   distanceProtothread(&getDistancePT);
   gyroProtothread(&getGyroPT);
-  currentProtothread(&getCurrentPTPT);
+  currentProtothread(&getCurrentPT);
   newInputProtothread(&getNewInputPT);
   runForwardProtothread(&forwardRunPT);
   runBackwardProtothread(&backwardRunPT);
